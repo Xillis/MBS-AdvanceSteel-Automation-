@@ -1,12 +1,7 @@
 (defun c:M-set ( / )
 (SETQ OBJ (car (entsel)))
 (dumpallproperties OBJ 1)
-(PRINT (getpropertyvalue OBJ "Model Role"))
-(PRINT (ispropertyreadonly OBJ "Model Role"))
-(PRINT (getpropertyvalue OBJ "Pre defined remark"))
-(PRINT (ispropertyreadonly OBJ "Pre defined remark"))
-(PRINT (getpropertyvalue OBJ "User Attribute 03"))
-(PRINT (ispropertyreadonly OBJ "User Attribute 03"))
+(PRINT (getpropertyvalue OBJ "CLASS"))
 )
 
 (defun c:M-set ( / )
@@ -27,8 +22,8 @@
 
 (DEFUN C:TEST ( / OBJ )
 	(SETQ OBJ (car (entsel)))
-	(setpropertyvalue OBJ "AcDbDynBlockPropertyPanel Length" 240)
-	(setpropertyvalue OBJ "COLOR" "QC8262 Black")
+	(SETQ TMP (dumpallproperties OBJ 1))
+	(PRINT TMP)
 	)
 
 
