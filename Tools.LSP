@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (DEFUN C:INFO ( / OBJ )
 	(SETQ OBJ (car (entsel)))
 	(PRINT "dxf OUTPUT")
@@ -16,3 +17,23 @@
 		(PRINT x)
 	)
 )
+=======
+(DEFUN C:INFO ( / OBJ )
+	(SETQ OBJ (car (entsel)))
+	(PRINT "dxf OUTPUT")
+	(foreach  p (ENTGET OBJ)
+		(PRINT p)
+	)
+	(PRINT "Properties Dunp")
+	(dumpallproperties OBJ 1)
+	(PRINT "VLX Dump")
+	(print (vlax-dump-object (VLAX-ENAME->VLA-OBJECT OBJ) T))
+)
+
+(DEFUN C:SERPATH ( / SPLIST)
+	(SETQ SPLIST (GETENV "ACAD"))
+	(WHILE x SPLIST
+		(PRINT x)
+	)
+)
+>>>>>>> origin/master
