@@ -1,13 +1,3 @@
-(defun c:M-set ( / )
-(SETQ OBJ (car (entsel)))
-(dumpallproperties OBJ 1)
-(PRINT (getpropertyvalue OBJ "CLASS"))
-)
-
-(defun c:M-set ( / )
-(SETQ OBJ (VLAX-ENAME->VLA-OBJECT(car (entsel))))
-		(print (vlax-dump-object OBJ T))
-
 (DEFUN C:INFO ( / OBJ )
 	(SETQ OBJ (car (entsel)))
 	(PRINT "dxf OUTPUT")
@@ -20,26 +10,9 @@
 	(print (vlax-dump-object (VLAX-ENAME->VLA-OBJECT OBJ) T))
 )
 
-(DEFUN C:TEST ( / OBJ )
-	(SETQ OBJ (car (entsel)))
-	(SETQ TMP (dumpallproperties OBJ 1))
-	(PRINT TMP)
+(DEFUN C:SERPATH ( / SPLIST)
+	(SETQ SPLIST (GETENV "ACAD"))
+	(WHILE x SPLIST
+		(PRINT x)
 	)
-
-
-;;toggles a specified layer on and off layer defind by "0" 	
-(defun c:layertest (/ linfo )
-	(if (setq linfo (tblsearch "layer" "0"))
-		(progn
-			(if (= (cdr (assoc '70 linfo)) 1)
-				(command "-layer" "t" (cdr (assoc '2 linfo)) "")
-				(command "-layer" "f" (cdr (assoc '2 linfo)) "")				
-			)
-			(if (minusp (cdr (assoc '62 linfo)))
-				(command "-layer" "on" (cdr (assoc '2 linfo)) "")
-			)
-		)
-		(print "dose not exist")
-	)
-	(print linfo)
 )

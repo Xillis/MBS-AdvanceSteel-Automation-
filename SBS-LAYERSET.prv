@@ -1,0 +1,12 @@
+;;; Visual LISP make file [V1.0] SBS-LAYERSET saved to:[C:/Users/clarkl/Documents/GitHub/MBS-AdvanceSteel-Automation-] at:[6/28/17] 
+(PRV-DEF (:target . "SBS-LAYERSET.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "layer set.lsp"))
+	 (:require-file-list)
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . lsa)
+)
+;; EOF
