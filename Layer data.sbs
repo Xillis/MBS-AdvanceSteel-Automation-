@@ -7,8 +7,8 @@
 ("AS_RigidFrameColumn" 171 "Continuous" (("User Attribute 03" "FRAME_RIGID_COLUMN")))
 ("AS_RigidFrameRafter" 191 "Continuous" (("User Attribute 03" "FRAME_RIGID_RAFTER")("User Attribute 03" "FRAME_RIGID_PEAK")))
 ("AS_FramePost" 183 "Continuous" (("User Attribute 03" "FRAME_RIGID_INTERIOR")))
-("AS_EndwallColumn" 205 "Continuous" (("User Attribute 03" "FRAME_WALL_COLUMN")))
-("AS_EndwallRafter" 201 "Continuous" (("User Attribute 03" "FRAME_WALL_RAFTER")))
+("AS_EndwallColumn" 205 "Continuous" (("User Attribute 03" "FRAME_WALL_COLUMN")("Model Role" "Endwall Column")))
+("AS_EndwallRafter" 201 "Continuous" (("User Attribute 03" "FRAME_WALL_RAFTER")("Model Role" "Endwall Rafter")))
 ("AS_PortalColumn" 84 "Continuous" (("User Attribute 03" "FRAME_WIND_BENT")))
 ("AS_PortalHeader" 83 "Continuous" (("User Attribute 03" "FRAME_WIND_BENT_HEADER")))
 ("AS_HotRolledChannel" 30 "Continuous" ())
@@ -49,4 +49,5 @@
 ("AS_Special Order Plate" 4 "Continuous" (("User Attribute 04" "Special Order")))
 ("AS_Parapet" 131 "Continuous" (("User Attribute 03" "FRAME_EXTEND_FACIA")))
 ("AS_StandardParts" 31 "Continuous" (("Pre defined remark" "Standard Parts")))
+("AS_Angle" 80 "Continuous" (("Model Role" "Angle")))
 
