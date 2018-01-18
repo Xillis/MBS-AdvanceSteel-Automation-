@@ -1,5 +1,10 @@
 (DEFUN C:SBS-LAYERSET (/ TDATA LDATA RL oldvar MODELS INDEX SORTLIST OBJ)
-	(PRINT "SBS-LAYERSET V1.0.2")
+	(PRINT "SBS-LAYERSET V1.0.3")
+	(vla-StartUndoMark 
+		(vla-get-ActiveDocument 
+			(vlax-get-acad-object)
+		)
+	)
 	(setq oldvar (CWL-SVVCF (list '("CMDECHO" 0) '("CLAYER" "0"))))
 	(IF (NOT (findfile "Layer data.sbs"))
 		(SETQ TDATA (OPEN "X:/Autocad/Lisp Routines/Layer data.sbs" "r"))
@@ -14,7 +19,7 @@
 	)
 	(SETQ LDATA (REVERSE LDATA))
 	(CLOSE TDATA)
-	(SETQ SORTLIST '((0 . "ASTPLATE")(0 . "ASTBEAM")(0 . "ASTXWORKINGPLANE")(0 . "ASTXMODELVIEW")(0 . "ASTGRID")(0 . "ASTSPECIALPART")(0 . "ASTXPLATEFOLDRELATION") (0 . "ASTXCAMERA") (0 . "ASTWELD")))
+	(SETQ SORTLIST '((0 . "ASTPLATE")(0 . "ASTBEAM")(0 . "ASTXWORKINGPLANE")(0 . "ASTXMODELVIEW")(0 . "ASTGRID")(0 . "ASTSPECIALPART")(0 . "ASTXPLATEFOLDRELATION") (0 . "ASTXCAMERA")))
 	(FOREACH x SORTLIST 
 		(IF (SETQ MODELS(SSGET "_A" (LIST x)))
 			(PROGN
@@ -31,7 +36,7 @@
 												(VLAX-PUT-PROPERTY (VLAX-ENAME->VLA-OBJECT OBJ) 'Layer (CAR y))
 											)
 										)
-										((AND (= (CAR z) "ObjectName") (OR (= x (CADDR SORTLIST)) (= x (CADDDR SORTLIST)) (= x (NTH 4 SORTLIST)) (= x (NTH 6 SORTLIST)) (= x (NTH 7 SORTLIST)) (= x (NTH 8 SORTLIST))))
+										((AND (= (CAR z) "ObjectName") (OR (= x (CADDR SORTLIST)) (= x (CADDDR SORTLIST)) (= x (NTH 4 SORTLIST)) (= x (NTH 6 SORTLIST)) (= x (NTH 7 SORTLIST))))
 											(IF (= (vlax-get-property (VLAX-ENAME->VLA-OBJECT OBJ) (CAR z)) (CADR z))
 												(VLAX-PUT-PROPERTY (VLAX-ENAME->VLA-OBJECT OBJ) 'Layer (CAR y))
 											)
@@ -48,6 +53,11 @@
 	)
 	(CWL-SVVCF oldvar)
 	(PRINT "Layers have been set")
+	(vla-EndUndoMark 
+		(vla-get-ActiveDocument 
+			(vlax-get-acad-object)
+		)
+	)
 	(PRIN1)
 )
 
