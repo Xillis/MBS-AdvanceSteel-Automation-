@@ -4,6 +4,8 @@
 (".ViewBox" 14 "Continuous" (("ObjectName" "AstModelViewObjectRepr")))
 (".FlangeBracing" 70 "Continuous" ())
 (".Out-to-Out of Steel" 95 "DASHED" ())
+(".Node" 32 "Continuous" (("ObjectName" "AstUserDefinedPointRepr")))
+("Welds" 241 "Continuous" (("ObjectName" "AstWeldPatternRepr")))
 ("AS_Grid" 81 "DASHDOT" (("ObjectName" "AstGridRepr")))
 ("AS_RigidFrameColumn" 171 "Continuous" (("User Attribute 03" "FRAME_RIGID_COLUMN")))
 ("AS_RigidFrameRafter" 191 "Continuous" (("User Attribute 03" "FRAME_RIGID_RAFTER")("User Attribute 03" "FRAME_RIGID_PEAK")))

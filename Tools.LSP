@@ -1,4 +1,5 @@
 (DEFUN C:INFO ( / OBJ )
+	(vl-load-com)
 	(SETQ OBJ (car (entsel)))
 	(PRINT "dxf OUTPUT")
 	(foreach  p (ENTGET OBJ)
@@ -8,6 +9,8 @@
 	(dumpallproperties OBJ 1)
 	(PRINT "VLX Dump")
 	(print (vlax-dump-object (VLAX-ENAME->VLA-OBJECT OBJ) T))
+	(print (vla-getxdata (VLAX-ENAME->VLA-OBJECT OBJ) "" 'xtypeOut 'xdataOut))
+	(print (VLAX-ENAME->VLA-OBJECT OBJ))
 )
 
 (DEFUN C:SERPATH ( / SPLIST)
@@ -16,3 +19,14 @@
 		(PRINT x)
 	)
 )
+
+(DEFUN C:TEST ( / OBJ )
+	(SETQ OBJ (car (entsel)))
+	(PRINT (vlax-get-property (VLAX-ENAME->VLA-OBJECT OBJ) "AcDbDynBlockPropertyPanel Length"))
+)
+
+(DEFUN C:TEST ( / OBJ )
+	(SETQ OBJ (car (entsel)))
+	(PRINT (vla-get-ObjectName (VLAX-ENAME->VLA-OBJECT OBJ)))
+)
+
