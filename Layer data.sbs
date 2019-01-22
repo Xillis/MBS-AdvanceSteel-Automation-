@@ -20,7 +20,7 @@
 ("AS_Strut" 82 "Continuous" (("User Attribute 03" "FRAME_STRUT")("Model Role" "strut")))
 ("AS_Stabilizer" 231 "Continuous" (("Pre defined remark" "Stabilizer")))
 ("AS_CrossBracing" 90 "Continuous" (("Model Role" "Wind bracing")("Model Role" "Turnbuckle bracing")))
-("AS_HotRolledFlangeBrace" 112 "Continuous" (("Model Role" "Angle Bracing")))
+("AS_HotRolledFlangeBrace" 112 "Continuous" (("Model Role" "Angle Bracing") ("Model Role" "Vertical Bracing")))
 ("AS_SpecialParts" 151 "Continuous" (("Model Role" "Bent Plate")))
 ("AS_Girt" 41 "Continuous" (("Model Role" "Girt")))
 ("AS_Girt-C" 145 "Continuous" ())
@@ -58,4 +58,4 @@
 ("AS_Parapet" 131 "Continuous" (("User Attribute 03" "FRAME_EXTEND_FACIA")))
 ("AS_StandardParts" 31 "Continuous" (("Pre defined remark" "Standard Parts")))
 ("AS_Angle" 80 "Continuous" (("Model Role" "Angle")("Model Role" "Clip angle")))
-
+("AS_Core-Slab" 251 "Continuous" (("Name" "CORESLAB200")("Name" "CORESLAB250")("Name" "CORESLAB300")))

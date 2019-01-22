@@ -1,0 +1,12 @@
+;;; Visual LISP make file [V1.0] SBS-OUTSOURCED saved to:[C:/Users/clarkl/Documents/GitHub/MBS-AdvanceSteel-Automation-] at:[1/22/19] 
+(PRV-DEF (:target . "SBS-OUTSOURCED.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "Outsourced.lsp"))
+	 (:require-file-list)
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . lsa)
+)
+;; EOF
