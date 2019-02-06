@@ -1,5 +1,5 @@
-(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE HOLEINDEX BBLOW BBHIGH HOLE HSIZE)
-	(prompt "SBS-OUTSOURCED V1.0.0")
+(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
+	(prompt "SBS-OUTSOURCED V1.0.2")
 	(print)
 	(vl-load-com)
 	(vla-StartUndoMark 
@@ -7,13 +7,14 @@
 			(vlax-get-acad-object)
 		)
 	)
-	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0))))
+	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0)'("CLAYER" "0"))))
 	(COMMAND "-LAYER" "M" "AS_Special Order Plate" "C" 4 "AS_Special Order Plate" "L" "Continuous" "AS_Special Order Plate" "")
-	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0))))
 	(setq 
 		SSPLATE(ssget "_A" '((0 . "ASTPLATE")))
 		INDEX 0
 	)
+	(command-s "AstM4SwitchReprMode_" SSPLATE "")
+	(command-s "UCS" "W")
 	(while (/= NIL(setq OBJ (ssname SSPLATE INDEX)))
 		(setq NAME (getpropertyvalue OBJ "Name"))
 		(setq 
@@ -39,7 +40,6 @@
 			(
 				(<= 0.75 THICKNESS)
 				(progn
-					(command-s "AstM4SwitchReprMode_" OBJ "")
 					(command-s "_astm4changerep" OBJ "")
 					(vla-getboundingbox (vlax-ename->vla-object OBJ) 'BBLOW 'BBHIGH)
 					(setq
@@ -47,7 +47,7 @@
 						BBHIGH (vlax-safearray->list BBHIGH)
 						SSHOLE(ssget "_W" BBLOW BBHIGH '((0 . "ASTHOLEPLATE")))
 						HOLEINDEX 0
-					)
+					)				
 					(if (not (null SSHOLE))
 						(while (/= NIL(setq HOLE (ssname SSHOLE HOLEINDEX)))
 							(setq HSIZE (atof(getpropertyvalue HOLE "Hole diameter")))
@@ -78,12 +78,14 @@
 							(setq HOLEINDEX (1+ HOLEINDEX))
 						)
 					)
+					(command-s "AstM4SwitchReprMode_" OBJ "")
 				)
 			)
 			(T NIL)
 		)
 		(setq INDEX (1+ INDEX))
 	)
+	(command-s "UCS" "P")
 	(CWL-SVVCF OLDVAR)
 	(vla-EndUndoMark 
 		(vla-get-ActiveDocument 
