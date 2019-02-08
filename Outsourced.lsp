@@ -1,5 +1,5 @@
 (defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
-	(prompt "SBS-OUTSOURCED V1.0.2")
+	(prompt "SBS-OUTSOURCED V1.0.4")
 	(print)
 	(vl-load-com)
 	(vla-StartUndoMark 
@@ -8,13 +8,15 @@
 		)
 	)
 	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0)'("CLAYER" "0"))))
-	(COMMAND "-LAYER" "M" "AS_Special Order Plate" "C" 4 "AS_Special Order Plate" "L" "Continuous" "AS_Special Order Plate" "")
+	(command-s "-LAYER" "M" "AS_Special Order Plate" "C" 4 "AS_Special Order Plate" "L" "Continuous" "AS_Special Order Plate" "")
 	(setq 
 		SSPLATE(ssget "_A" '((0 . "ASTPLATE")))
 		INDEX 0
 	)
-	(command-s "AstM4SwitchReprMode_" SSPLATE "")
+	(command-s "-VIEW" "SAVE" "vtemp")
+	(command-s "ASTORSWITCHREPRMODE" "DEFAULT" SSPLATE "")
 	(command-s "UCS" "W")
+	(command-s "PLAN" "" "")
 	(while (/= NIL(setq OBJ (ssname SSPLATE INDEX)))
 		(setq NAME (getpropertyvalue OBJ "Name"))
 		(setq 
@@ -35,19 +37,19 @@
 					(not (or (= MODELROLE "Web plateR") (= MODELROLE "Web plateC")))
 					(or (< 1 THICKNESS) (<  12 WIDTH))
 				)
-				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")	
 			)
 			(
-				(<= 0.75 THICKNESS)
 				(progn
 					(command-s "_astm4changerep" OBJ "")
 					(vla-getboundingbox (vlax-ename->vla-object OBJ) 'BBLOW 'BBHIGH)
 					(setq
 						BBLOW (vlax-safearray->list BBLOW)
 						BBHIGH (vlax-safearray->list BBHIGH)
-						SSHOLE(ssget "_W" BBLOW BBHIGH '((0 . "ASTHOLEPLATE")))
+						SSHOLE(ssget "_C" BBLOW BBHIGH '((0 . "ASTHOLEPLATE")))
 						HOLEINDEX 0
-					)				
+					)
+					(command-s "ASTORSWITCHREPRMODE" "DEFAULT" OBJ "")					
 					(if (not (null SSHOLE))
 						(while (/= NIL(setq HOLE (ssname SSHOLE HOLEINDEX)))
 							(setq HSIZE (atof(getpropertyvalue HOLE "Hole diameter")))
@@ -78,14 +80,14 @@
 							(setq HOLEINDEX (1+ HOLEINDEX))
 						)
 					)
-					(command-s "AstM4SwitchReprMode_" OBJ "")
 				)
 			)
 			(T NIL)
 		)
 		(setq INDEX (1+ INDEX))
 	)
-	(command-s "UCS" "P")
+	(command-s "-VIEW" "RESTORE" "vtemp")
+	(command-s "-VIEW" "DELETE" "vtemp")
 	(CWL-SVVCF OLDVAR)
 	(vla-EndUndoMark 
 		(vla-get-ActiveDocument 

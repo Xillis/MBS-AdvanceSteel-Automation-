@@ -10,7 +10,9 @@
 	(PRINT "VLX Dump")
 	(print (vlax-dump-object (VLAX-ENAME->VLA-OBJECT OBJ) T))
 	(print "1")
-	(print (vla-getxdata (VLAX-ENAME->VLA-OBJECT OBJ) "" 'xtypeOut 'xdataOut))
+	(vla-getxdata (VLAX-ENAME->VLA-OBJECT OBJ) "" 'xtypeOut 'xdataOut)
+	(print xtypeOut)
+	(print xdataOut)
 	(print (VLAX-ENAME->VLA-OBJECT OBJ))
 )
 
@@ -43,4 +45,5 @@
 	(SETQ OBJ (car (entsel)))
 	(PRINT (vla-get-ObjectName (VLAX-ENAME->VLA-OBJECT OBJ)))
 )
+info
 
