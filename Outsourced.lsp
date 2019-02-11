@@ -1,5 +1,5 @@
 (defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
-	(prompt "SBS-OUTSOURCED V1.0.4")
+	(prompt  "SBS-OUTSOURCED V1.0.5")
 	(print)
 	(vl-load-com)
 	(vla-StartUndoMark 
@@ -17,6 +17,7 @@
 	(command-s "ASTORSWITCHREPRMODE" "DEFAULT" SSPLATE "")
 	(command-s "UCS" "W")
 	(command-s "PLAN" "" "")
+	(acet-ui-progress "Looking For Outsourced Plates:" (sslength ssplate))
 	(while (/= NIL(setq OBJ (ssname SSPLATE INDEX)))
 		(setq NAME (getpropertyvalue OBJ "Name"))
 		(setq 
@@ -85,6 +86,7 @@
 			(T NIL)
 		)
 		(setq INDEX (1+ INDEX))
+		(acet-ui-progress INDEX)
 	)
 	(command-s "-VIEW" "RESTORE" "vtemp")
 	(command-s "-VIEW" "DELETE" "vtemp")
@@ -94,11 +96,18 @@
 			(vlax-get-acad-object)
 		)
 	)
+	(acet-ui-progress)
 	(prompt "Out sourced material set to layer AS_Special Order Plate")
 	(prin1)
 ) 
 
 ;;TOOLS
+
+(defun *error* (msg)
+  (princ "error: ")
+  (princ msg)
+ (princ)
+)
 
 (defun CWL-SVVCF ( SYSVAR / SYSVAR OLDVAR)
 	;;(print "Start CWL-SVVCF")
