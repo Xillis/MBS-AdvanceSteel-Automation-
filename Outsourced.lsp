@@ -1,5 +1,5 @@
-(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
-	(prompt  "SBS-OUTSOURCED V1.0.5")
+(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE TOTAL-FOUND HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
+	(prompt  "SBS-OUTSOURCED V1.1.0")
 	(print)
 	(vl-load-com)
 	(vla-StartUndoMark 
@@ -7,11 +7,12 @@
 			(vlax-get-acad-object)
 		)
 	)
-	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0)'("CLAYER" "0"))))
+	(setq OLDVAR (CWL-SVVCF (list '("CMDECHO" 0)'("CLAYER" "0")'("LUNITS" 2))))
 	(command-s "-LAYER" "M" "AS_Special Order Plate" "C" 4 "AS_Special Order Plate" "L" "Continuous" "AS_Special Order Plate" "")
 	(setq 
 		SSPLATE(ssget "_A" '((0 . "ASTPLATE")))
 		INDEX 0
+		TOTAL-FOUND 0 
 	)
 	(command-s "-VIEW" "SAVE" "vtemp")
 	(command-s "ASTORSWITCHREPRMODE" "DEFAULT" SSPLATE "")
@@ -23,22 +24,34 @@
 		(setq 
 			MODELROLE (getpropertyvalue OBJ "Model Role")
 			WIDTH (distof (vl-string-subst "'-" "' " (substr NAME (+ 2(vl-string-position (ascii "x") NAME)))) 4)
-			THICKNESS (distof (getpropertyvalue OBJ "Thickness") 2)
 		)
+		(IF  (null (setq THICKNESS (distof (getpropertyvalue OBJ "Thickness") 2)))
+			(setq THICKNESS (distof (getpropertyvalue OBJ "Thickness") 4))
+		)		
 		(cond 
+			(
+				(> 0.14 THICKNESS)
+				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+				(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+				(command-s "_AstM4CommMarkSelAdd" OBJ "")
+			)
 			(
 				(and 
 					(or (= MODELROLE "Web plateR") (= MODELROLE "Web plateC"))
 					(or (< 0.5 THICKNESS) (<  72 WIDTH))
 				)
 				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+				(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+				(command-s "_AstM4CommMarkSelAdd" OBJ "")
 			)
 			(
 				(and
 					(not (or (= MODELROLE "Web plateR") (= MODELROLE "Web plateC")))
 					(or (< 1 THICKNESS) (<  12 WIDTH))
 				)
-				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")	
+				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+				(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+				(command-s "_AstM4CommMarkSelAdd" OBJ "")				
 			)
 			(
 				(progn
@@ -53,7 +66,10 @@
 					(command-s "ASTORSWITCHREPRMODE" "DEFAULT" OBJ "")					
 					(if (not (null SSHOLE))
 						(while (/= NIL(setq HOLE (ssname SSHOLE HOLEINDEX)))
-							(setq HSIZE (atof(getpropertyvalue HOLE "Hole diameter")))
+							(IF (null (distof (getpropertyvalue OBJ "Thickness") 2))
+								(setq HSIZE (distof (getpropertyvalue HOLE "Hole diameter") 4))
+								(setq HSIZE (distof (getpropertyvalue HOLE "Hole diameter") 2))
+							)		
 							(cond
 								(
 									(and
@@ -61,6 +77,8 @@
 										(or (<= HSIZE 0.9375) (>= HSIZE 1.375))
 									)
 									(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+									(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+									(command-s "_AstM4CommMarkSelAdd" OBJ "")
 								)
 								(
 									(and
@@ -68,6 +86,8 @@
 										(or (<= HSIZE 0.8125 ) (>= HSIZE 1.5625))
 									)
 									(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+									(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+									(command-s "_AstM4CommMarkSelAdd" OBJ "")
 								)
 								(
 									(and
@@ -75,6 +95,8 @@
 										(or (<= HSIZE 0.6875) (>= HSIZE 1.75))
 									)
 									(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
+									(setq TOTAL-FOUND (1+ TOTAL-FOUND))
+									(command-s "_AstM4CommMarkSelAdd" OBJ "")
 								)
 								(T NIL)
 							)
@@ -88,16 +110,24 @@
 		(setq INDEX (1+ INDEX))
 		(acet-ui-progress INDEX)
 	)
+	(acet-ui-progress)
 	(command-s "-VIEW" "RESTORE" "vtemp")
 	(command-s "-VIEW" "DELETE" "vtemp")
-	(CWL-SVVCF OLDVAR)
+	(if (not (= TOTAL-FOUND 0))
+		(progn
+			(command-s "_AstM4CommSelectMarkedObjects")
+			(command-s "AstM10ViewSelObjects_")
+			(command-s "_AstM4CommUnmarkObjects")
+			(prompt (strcat (itoa TOTAL-FOUND) " Outsourced plates found and set to layer AS_Special Order Plate"))
+		)
+		(prompt "No outsourced plates found")
+	)
+		(CWL-SVVCF OLDVAR)
 	(vla-EndUndoMark 
 		(vla-get-ActiveDocument 
 			(vlax-get-acad-object)
 		)
 	)
-	(acet-ui-progress)
-	(prompt "Out sourced material set to layer AS_Special Order Plate")
 	(prin1)
 ) 
 
