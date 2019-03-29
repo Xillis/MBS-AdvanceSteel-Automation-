@@ -14,11 +14,11 @@
 		INDEX 0
 		TOTAL-FOUND 0 
 	)
+	(acet-ui-progress "Looking For Outsourced Plates:" (sslength ssplate))
 	(command-s "-VIEW" "SAVE" "vtemp")
 	(command-s "ASTORSWITCHREPRMODE" "DEFAULT" SSPLATE "")
 	(command-s "UCS" "W")
 	(command-s "PLAN" "" "")
-	(acet-ui-progress "Looking For Outsourced Plates:" (sslength ssplate))
 	(while (/= NIL(setq OBJ (ssname SSPLATE INDEX)))
 		(setq NAME (getpropertyvalue OBJ "Name"))
 		(setq 
@@ -122,7 +122,8 @@
 		)
 		(prompt "No outsourced plates found")
 	)
-		(CWL-SVVCF OLDVAR)
+	(sssetfirst)
+	(CWL-SVVCF OLDVAR)
 	(vla-EndUndoMark 
 		(vla-get-ActiveDocument 
 			(vlax-get-acad-object)
