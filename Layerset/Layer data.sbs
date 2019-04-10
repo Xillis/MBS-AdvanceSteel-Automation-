@@ -52,7 +52,7 @@
 ("AS_FlangeBracing" 74 "Continuous" (("User Attribute 01" "FB")("Model Role" "Stay") ("User Attribute 03" "BRACE_FLANGE")))
 ("AS_BasePlate" 34 "Continuous" (("Model Role" "Base Plate")))
 ("AS_Endplate" 221 "Continuous" (("Model Role" "End Plate")))
-("AS_Gussetplate" 210 "Continuous" (("Model Role" "Gusset plate")))
+("AS_Gussetplate" 210 "Continuous" (("Model Role" "Gusset plate")("Model Role" "Stay Plate")))
 ("AS_Plate" 222 "Continuous" (("Model Role" "Plate")))
 ("AS_Stiffener" 40 "Continuous" (("Model Role" "Stiffener")))
 ("AS_Special Order Plate" 4 "Continuous" (("User Attribute 04" "Special Order")))

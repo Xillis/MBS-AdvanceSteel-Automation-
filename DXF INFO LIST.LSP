@@ -1,4 +1,4 @@
-(DXF_BUILD_BLOCK "H:\\DRAWING\\ALLSTEEL\\75522\\Andwg-3.dxf" "RFRM-1")
+;;(DXF_BUILD_BLOCK "H:\\DRAWING\\ALLSTEEL\\75522\\Andwg-3.dxf" "RFRM-1")
 
 (defun DXF_BUILD_BLOCK (FILENAME BLOCKNAME / BLOCKDATA ELEMENT OLDVAR)
 	(vla-StartUndoMark 
@@ -12,9 +12,14 @@
 	(Print BLOCKDATA)
 	;;brake the Block data in to Elements
 	(foreach x BLOCKDATA
-		(if (= (car x) 0)
+		(if (= (car x) 0) 
 			(progn
-				(print (reverse ELEMENT))
+				(if (= (CDR (CAR (reverse ELEMENT))) "LINE")
+					(progn
+						(print (reverse ELEMENT))
+						(entmake (reverse ELEMENT))
+					)
+				)
 				(setq ELEMENT (null ELEMENT))
 			)
 		)
@@ -44,8 +49,10 @@
 			(while (not (= RL "ENDSEC"))
 				(if (= RL BLOCKNAME)
 					(while (not (= RL "ENDBLK"))
-						(setq RL (read RL))
-						(setq DXFDATA (append (list RL) DXFDATA))
+						(if (= (type (read RL)) (read "SYM"))
+							(setq DXFDATA (append (list RL) DXFDATA))
+							(setq DXFDATA (append (list (read RL)) DXFDATA))
+						)
 						(setq RL (read-line DXFFILE))
 					)
 				)

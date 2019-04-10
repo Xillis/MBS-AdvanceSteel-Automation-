@@ -1,0 +1,12 @@
+;;; Visual LISP make file [V1.0] Table Insert saved to:[C:/Users/clarkl/Documents/GitHub/MBS-AdvanceSteel-Automation-/Table Insert] at:[4/10/19] 
+(PRV-DEF (:target . "Table Insert.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "Table Insert.lsp"))
+	 (:require-file-list)
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . st)
+)
+;; EOF
