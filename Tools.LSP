@@ -49,5 +49,7 @@ info
 
 (entmake ((0 . "LINE") (10 0.0) (20 0.0) (11 0.0) (21 2.717)))
 
+ 
+(strcat "AutoCAD.AcCmColor." (substr (getvar "ACADVER")1 2))
 
 vla-Import doc importFile insertPoint scalefactor

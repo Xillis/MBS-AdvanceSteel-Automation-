@@ -1,6 +1,5 @@
-(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE TOTAL-FOUND HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME)
-	(prompt  "SBS-OUTSOURCED V1.1.0")
-	(print)
+(defun c:SBS-OUTSOURCED ( / OLDVAR SSPLATE INDEX OBJ WIDTH THICKNESS MODELROLE SSHOLE TOTAL-FOUND HOLEINDEX BBLOW BBHIGH HOLE HSIZE NAME SKIP)
+	(prompt  "SBS-OUTSOURCED V1.3.0")
 	(vl-load-com)
 	(vla-StartUndoMark 
 		(vla-get-ActiveDocument 
@@ -13,6 +12,7 @@
 		SSPLATE(ssget "_A" '((0 . "ASTPLATE")))
 		INDEX 0
 		TOTAL-FOUND 0 
+		SKIP 0
 	)
 	(acet-ui-progress "Looking For Outsourced Plates:" (sslength ssplate))
 	(command-s "-VIEW" "SAVE" "vtemp")
@@ -27,8 +27,16 @@
 		)
 		(IF  (null (setq THICKNESS (distof (getpropertyvalue OBJ "Thickness") 2)))
 			(setq THICKNESS (distof (getpropertyvalue OBJ "Thickness") 4))
-		)		
-		(cond 
+		)
+		(if (= (getvar "INSUNITS") 4)
+			(setq THICKNESS (* THICKNESS 0.03937))
+		)
+		(cond
+			(
+				(= 0 WIDTH)
+				(setq SKIP (1+ SKIP))
+				(prompt (strcat "\nError found in plate: " NAME))
+			)
 			(
 				(> 0.14 THICKNESS)
 				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
@@ -38,7 +46,7 @@
 			(
 				(and 
 					(or (= MODELROLE "Web plateR") (= MODELROLE "Web plateC"))
-					(or (< 0.5 THICKNESS) (<  72 WIDTH))
+					(or (< 0.5 THICKNESS) (<  71 WIDTH))
 				)
 				(vlax-put-property (vlax-ename->vla-object OBJ) 'Layer "AS_Special Order Plate")
 				(setq TOTAL-FOUND (1+ TOTAL-FOUND))
@@ -69,7 +77,10 @@
 							(IF (null (distof (getpropertyvalue OBJ "Thickness") 2))
 								(setq HSIZE (distof (getpropertyvalue HOLE "Hole diameter") 4))
 								(setq HSIZE (distof (getpropertyvalue HOLE "Hole diameter") 2))
-							)		
+							)
+							(if (= (getvar "INSUNITS") 4)
+								(setq HSIZE (* HSIZE 0.03937))
+							)								
 							(cond
 								(
 									(and
@@ -113,12 +124,15 @@
 	(acet-ui-progress)
 	(command-s "-VIEW" "RESTORE" "vtemp")
 	(command-s "-VIEW" "DELETE" "vtemp")
+	(if (not (= SKIP 0))
+		(prompt (strcat "\n" (itoa SKIP) " Plates skipped because of errors"))
+	)
 	(if (not (= TOTAL-FOUND 0))
 		(progn
 			(command-s "_AstM4CommSelectMarkedObjects")
 			(command-s "AstM10ViewSelObjects_")
 			(command-s "_AstM4CommUnmarkObjects")
-			(prompt (strcat (itoa TOTAL-FOUND) " Outsourced plates found and set to layer AS_Special Order Plate"))
+			(prompt (strcat "\n" (itoa TOTAL-FOUND) " Outsourced plates found and set to layer AS_Special Order Plate"))
 		)
 		(prompt "No outsourced plates found")
 	)
