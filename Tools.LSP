@@ -16,6 +16,13 @@
 	(print (VLAX-ENAME->VLA-OBJECT OBJ))
 )
 
+(defun *error* (msg)
+	(vl-bt)
+	(princ "error: ")
+	(princ msg)
+	(princ)
+)
+
 (DEFUN C:SERPATH ( / SPLIST)
 	(SETQ SPLIST (GETENV "ACAD"))
 	(WHILE x SPLIST
@@ -36,8 +43,13 @@
 (DEFUN C:TEST ( / OBJ )
 	(SETQ OBJ (car (entsel)))
 	(PRINT (getpropertyvalue OBJ "User Attribute 04"))
-	(PRINT (vlax-property-available-p (VLAX-ENAME->VLA-OBJECT OBJ) "User Attribute 04"))
-	(vlax-put-property (VLAX-ENAME->VLA-OBJECT OBJ) "User Attribute 04" "hello")
+	(print (ispropertyreadonly OBJ "User Attribute 04"))
+	(setpropertyvalue OBJ "User Attribute 04" "yay")
+	(PRINT (getpropertyvalue OBJ "User Attribute 04"))
+	(print (vlax-get-property (VLAX-ENAME->VLA-OBJECT OBJ) "User Attribute 04"))
+	(PRINT (vlax-property-available-p (VLAX-ENAME->VLA-OBJECT OBJ) '"User Attribute 04"))
+	(PRINT (vlax-property-available-p (VLAX-ENAME->VLA-OBJECT OBJ) '"User Attribute 04" t))
+	(vlax-put-property (VLAX-ENAME->VLA-OBJECT OBJ) '"User Attribute 04" "hello")
 	(PRINT (getpropertyvalue OBJ "User Attribute 04"))
 )
 
