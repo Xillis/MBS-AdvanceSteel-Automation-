@@ -1,5 +1,6 @@
 (Defun c:SBS_CraneDataImport ( / EXCELFILE CELL CRANELIST CELLVALUE CRANEDATA CELLLIST OLDVAR EXCELBOOK EXCELAPPLICATION EXCELSHEET OLDERR BLOCKDATA ATTTEST)
 	(vl-load-com)
+	(print "SBS_CraneDataImport V1.0.0")
 	;;Internal functun calls
 	;;Error reset
 	(defun *Error-Reset* (msg / )
@@ -259,6 +260,7 @@
 				)
 			)
 			(~Set-Description-Unit)
+			(set_tile "Crane System" (~Check_block_insert 1))
 			(~Populate_List "Crane" 
 				(mapcar 
 					'(lambda (x)
@@ -285,18 +287,74 @@
 					"(~Set-Dia-Crane-Info)"
 				)
 			)
+			;;(action_tile "Crane System" 
+			;;;	(if (not (= (~Check_block_insert (atoi $value)) $value))
+			;;"(print (~Check_block_insert (atoi $value)))"
+			;;		(progn
+			;;		(print $value)
+			;;		"(set_tile \"error\" (strcat \"Crane System \" $value \" is already in use\"))"
+			;;			(set_tile \"Crane System\" (~Check_block_insert 1))
+			;;		)
+			;;		(print $value)
+			;;	)
+			;;)
 			(action_tile "CraneNumber" "(~Set-Dia-Crane-Info)")
 			(action_tile "Crane"  "(~Get-Crane-Info)")
 			(action_tile "accept" 
 				"(if (= (get_tile \"Crane\") \"\")
 					(set_tile \"error\" \"Please Select a Crane From the List\")
-					(done_dialog)
+					(if (not (= (~Check_block_insert (atoi (get_tile \"Crane System\"))) (get_tile \"Crane System\")))
+						(progn 
+							(set_tile \"error\" (strcat \"Crane System \" (get_tile \"Crane System\") \" is already in use\"))
+							(set_tile \"Crane System\" (~Check_block_insert 1))
+						)
+						(progn
+							(setq BLOCKDATA (append (list (cons '\"Crane System\" (list (get_tile \"Crane System\")))) BLOCKDATA))
+							(done_dialog)
+						)
+						)
+					)
 				)"
 			)
 			(action_tile "cancle" (strcat "(done_dialog)" "(exit)"))
 		(start_dialog)
 		(unload_dialog DIA-ID)
 	)
+	;;Checks for and isolates inserted blocks of a specified name
+	(defun ~Check_block_insert ( COUNT / OBJSS OBJ INDEX COUNT SLIST)
+	
+		(setq
+			OBJSS (ssget "_A" '((0 . "INSERT")))
+			INDEX 0
+		)
+		(if (not (null OBJSS))
+			(progn
+				(while (/= NIL (setq OBJ (ssname OBJSS INDEX)))
+					(if 
+						(= 
+							(vlax-get-property (VLAX-ENAME->VLA-OBJECT  obj)
+								(if (vlax-property-available-p (VLAX-ENAME->VLA-OBJECT obj) 'effectivename)
+									'effectivename
+									'name
+								)
+							)
+							"CRANE INFO"		
+						)
+					(setq SLIST (append (list (atoi (~StrChr (getpropertyvalue OBJ "CRANE_SYSTEM" )))) SLIST))
+					)
+					(setq INDEX (1+ INDEX))
+				)
+				(setq SLIST (vl-sort SLIST '<))
+				(foreach i SLIST
+					(if (= i COUNT)
+						(setq COUNT (1+ COUNT))
+					)
+				)
+			)
+		)
+		(itoa COUNT)
+	)
+	;;inserts the crane data block
 	(defun ~insert_crane_data_table ( / WB1 WB2 )
 		(command "_.-insert" "CRANE INFO" pause "" "" "")
 		(foreach x BLOCKDATA
@@ -311,6 +369,9 @@
 						((or (= (car x) "Control") (= (car x) "Crane Classification") (= (car x) "Side Thrust") (= (car x) "Tractive Force"))
 							(setpropertyvalue (entlast) (strcase (vl-string-translate " " "_" (car x))) (strcase(cadr x)))
 							(setpropertyvalue (entlast) (strcat (strcase (vl-string-translate " " "_" (car x))) "2") (strcase(cadr x)))
+						)
+						((= (car x) "Crane System")
+							(setpropertyvalue (entlast) (strcase (vl-string-translate " " "_" (car x))) (strcat "%%uCRANE SYSTEM #" (cadr x)))
 						)
 						(t (setpropertyvalue (entlast) (strcase (vl-string-translate " " "_" (car x))) (strcase(cadr x))))
 					)
@@ -407,6 +468,38 @@
 			)
 		)
 	)
+	(defun ~Unit_Set ( )
+		(if (= (getvar "Lunits") 4)
+			(progn
+				(setpropertyvalue (entlast) "CCUNIT1" "(ton)")
+				(setpropertyvalue (entlast) "CCUNIT2" "(ton)")
+				(setpropertyvalue (entlast) "BWUNIT1" "(lbs)")
+				(setpropertyvalue (entlast) "BWUNIT2" "(lbs)")
+				(setpropertyvalue (entlast) "TWUNIT1" "(lbs)")
+				(setpropertyvalue (entlast) "TWUNIT2" "(lbs)")
+				(setpropertyvalue (entlast) "WLUNIT1" "(kips)")
+				(setpropertyvalue (entlast) "WLUNIT2" "(kips)")
+				(setpropertyvalue (entlast) "STUNIT1" "(kips)")
+				(setpropertyvalue (entlast) "STUNIT2" "(kips)")
+				(setpropertyvalue (entlast) "TFUNIT1" "(kips/Side)")
+				(setpropertyvalue (entlast) "TFUNIT2" "(kips/Side)")
+			)
+			(progn
+				(setpropertyvalue (entlast) "CCUNIT1" "(tonne)")
+				(setpropertyvalue (entlast) "CCUNIT2" "(tonne)")
+				(setpropertyvalue (entlast) "BWUNIT1" "(Kg)")
+				(setpropertyvalue (entlast) "BWUNIT2" "(Kg)")
+				(setpropertyvalue (entlast) "TWUNIT1" "(Kg)")
+				(setpropertyvalue (entlast) "TWUNIT2" "(Kg)")
+				(setpropertyvalue (entlast) "WLUNIT1" "(Kn)")
+				(setpropertyvalue (entlast) "WLUNIT2" "(Kn)")
+				(setpropertyvalue (entlast) "STUNIT1" "(Kn)")
+				(setpropertyvalue (entlast) "STUNIT2" "(Kn)")
+				(setpropertyvalue (entlast) "TFUNIT1" "(Kn/Side)")
+				(setpropertyvalue (entlast) "TFUNIT2" "(Kn/Side)")
+			)
+		)
+	)
 	;;End of internal function calls
 	;;Main function
 	(vla-StartUndoMark 
@@ -451,6 +544,7 @@
 	)
 	(~Close_Excel_File)
 	(~insert_crane_data_table)
+	(~Unit_Set)
 	(~SVVCF OLDVAR)
 	(setq *error* OLDERR)
 	(vla-EndUndoMark 
@@ -460,5 +554,3 @@
 	)
 	(princ)
 )
-
-(tblsearch "block" "CRANE INFO")

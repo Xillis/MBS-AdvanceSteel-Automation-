@@ -31,8 +31,11 @@ SBS_CRANE_SELECTION : dialog {
 		}
 		spacer_1;
 		:column {
-			:text {
+			:edit_box {
 				label = "Crane System:";
+				key = "Crane System";
+				width = 3;
+				fixed_width = true;
 			}
 			:boxed_row {
 				:column {

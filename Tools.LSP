@@ -16,6 +16,39 @@
 	(print (VLAX-ENAME->VLA-OBJECT OBJ))
 )
 
+(defun c:dxfdump ( / OBJ )
+(SETQ OBJ (car (entsel)))
+	(PRINT "dxf OUTPUT")
+	(foreach  p (ENTGET OBJ)
+		(PRINT p)
+	)
+	(if (wcmatch (setq blk (cdr (assoc 2 (entget ent)))) "`**")
+        (if
+            (and
+                (setq rep
+                    (cdadr
+                        (assoc -3
+                            (entget
+                                (cdr
+                                    (assoc 330
+                                        (entget
+                                            (tblobjname "block" blk)
+                                        )
+                                    )
+                                )
+                               '("acdbblockrepbtag")
+                            )
+                        )
+                    )
+                )
+                (setq rep (handent (cdr (assoc 1005 rep))))
+            )
+            (setq blk (cdr (assoc 2 (entget rep))))
+        )
+    )
+	(print blk)
+	)
+
 (defun *error* (msg)
 	(vl-bt)
 	(princ "error: ")
@@ -32,7 +65,8 @@
 
 (DEFUN C:TEST ( / OBJ )
 	(SETQ OBJ (car (entsel)))
-	(PRINT (vlax-get-property (VLAX-ENAME->VLA-OBJECT OBJ) "AcDbDynBlockPropertyPanel Length"))
+	(print (ispropertyreadonly OBJ "AcDbDynBlockPropertyBlock Table1"))
+	(setpropertyvalue OBJ "AcDbDynBlockPropertyBlock Table1" 3)
 )
 
 (DEFUN C:TEST ( / OBJ )

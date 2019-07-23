@@ -1,0 +1,12 @@
+;;; Visual LISP make file [V1.0] Crane_Data_Import saved to:[C:/Users/clarkl/Documents/GitHub/MBS-AdvanceSteel-Automation-/Crane Data Import] at:[7/22/19] 
+(PRV-DEF (:target . "Crane_Data_Import.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "SBS Crane Data Import.lsp"))
+	 (:require-file-list (:txt "Project Data Info Map.SBS"))
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . lsa)
+)
+;; EOF
